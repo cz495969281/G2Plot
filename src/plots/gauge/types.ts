@@ -17,7 +17,7 @@ type Range = {
   /** 辅助的刻度值 0 ~ 1 的数字 */
   readonly ticks?: number[];
   /** 辅助刻度的颜色配置 */
-  readonly color?: string | string[];
+  readonly color?: string | string[] | ((data: number) => string);
 };
 
 /** 仪表盘配置类型定义 */

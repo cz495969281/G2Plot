@@ -1,4 +1,4 @@
-import { isString } from '@antv/util';
+import { isFunction, isString, get } from '@antv/util';
 import { interaction, animation, theme, scale } from '../../adaptor/common';
 import { AXIS_META_CONFIG_KEYS } from '../../constant';
 import { Params } from '../../core/adaptor';
@@ -51,9 +51,23 @@ function geometry(params: Params<GaugeOptions>): Params<GaugeOptions> {
   const v2 = chart.createView({ id: RANGE_VIEW_ID });
   v2.data(rangeData);
 
-  const rangeColor = isString(color) ? [color, DEFAULT_COLOR] : color;
+  const geometry = v2.interval().position(`1*${RANGE_VALUE}`).adjust('stack');
 
-  v2.interval().position(`1*${RANGE_VALUE}`).color(RANGE_TYPE, rangeColor).adjust('stack');
+  if (isFunction(color)) {
+    geometry.color(RANGE_VALUE, (datum) => {
+      const actualData = get(geometry.data, [0, RANGE_VALUE]);
+      if (actualData !== datum[0] || actualData !== datum[1]) {
+        return DEFAULT_COLOR;
+      }
+      return color(actualData);
+    });
+  } else {
+    let rangeColor = color;
+    if (isString(color)) {
+      rangeColor = [color, DEFAULT_COLOR];
+    }
+    geometry.color(RANGE_TYPE, rangeColor);
+  }
 
   v2.coordinate('polar', {
     innerRadius,

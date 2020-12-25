@@ -1,13 +1,13 @@
 import { Gauge } from '@antv/g2plot';
 
 const color = ['#F4664A', '#FAAD14', '#30BF78'];
-const getColor = (percent) => {
-  return percent < 0.4 ? color[0] : percent < 0.6 ? color[1] : color[2];
-};
+
 const gauge = new Gauge('container', {
   percent: 0.2,
   range: {
-    color: getColor(0.2),
+    color: (percent) => {
+      return percent < 0.4 ? color[0] : percent < 0.6 ? color[1] : color[2];
+    },
   },
   indicator: {
     pointer: {
@@ -51,6 +51,5 @@ const interval = setInterval(() => {
   } else {
     data += 0.001;
     gauge.changeData(data);
-    // range color 需要提供回调的方式
   }
 }, 100);
